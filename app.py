@@ -43,7 +43,7 @@ st.markdown("""
     /* --- ENCABEZADO IDÉNTICO A LA IMAGEN (BLANCO PURO) --- */
     .modal-header-brand {
         background-color: #ffffff;
-        padding: 15px 25px;
+        padding: 18px 25px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -52,10 +52,13 @@ st.markdown("""
     .brand-logo-container {
         display: flex;
         align-items: center;
+        max-width: 50%;
     }
     .brand-logo-img {
-        height: 32px;
+        max-height: 38px;
+        width: auto;
         object-fit: contain;
+        display: block;
     }
     .brand-title-text {
         text-align: right;
@@ -141,32 +144,32 @@ else:
 
 st.write("---")
 
-# DECLARACIÓN GLOBAL DE VARIABLES PARA EVITAR EL NAMEERROR
+# DECLARACIÓN GLOBAL DE VARIABLES PARA EL CONTROL DE FLUJO
 plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
 iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
 
 if monto_limpio > 0:
     
-    # --- ASIGNACIÓN DE TASAS E IMÁGENES DE MARCA ---
+    # --- ASIGNACIÓN DE TASAS E IMÁGENES LIMPIAS REVISADAS ---
     if tipo_tarjeta == "BBVA / Visa / Mastercard":
         tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
         texto_banco = "BBVA"
         color_banco = "#004488"
-        # URL de imagen limpia oficial de BBVA
-        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/BBVA_Logo.svg/320px-BBVA_Logo.svg"
+        # URL limpia sin extensiones duplicadas
+        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/BBVA_Logo.svg/320px-BBVA_Logo.svg.png"
     else:
         tasas = [0.04466, 0.09802, 0.13630, 0.17574, 0.20646]
         texto_banco = "American Express"
         color_banco = "#0076a5"
-        # URL de imagen limpia oficial de AMEX
-        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_2018.svg/240px-American_Express_logo_2018.svg"
+        # URL limpia sin extensiones duplicadas
+        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_2018.svg/240px-American_Express_logo_2018.svg.png"
 
     # --- EFECTO VISUAL DE POP-UP CENTRADO (5 SEGUNDOS) ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
         placeholder = st.empty()
         
-        # Animación de 10 pasos fluidos
+        # Animación de 10 pasos a 0.5s cada uno
         for i_step in range(11):
             porcentaje = i_step * 10
             placeholder.markdown(f"""
@@ -174,7 +177,7 @@ if monto_limpio > 0:
                     <div class="modal-box" style="border-color: {color_banco};">
                         <div class="modal-header-brand">
                             <div class="brand-logo-container">
-                                <img src="{url_logo}.png" class="brand-logo-img" alt="{texto_banco}">
+                                <img src="{url_logo}" class="brand-logo-img" alt="{texto_banco}">
                             </div>
                             <div class="brand-title-text">
                                 <span class="brand-title-main">Sincronizando</span>
@@ -199,7 +202,7 @@ if monto_limpio > 0:
                 <div class="modal-box" style="border-color: #28a745;">
                     <div class="modal-header-brand">
                         <div class="brand-logo-container">
-                            <img src="{url_logo}.png" class="brand-logo-img" alt="{texto_banco}">
+                            <img src="{url_logo}" class="brand-logo-img" alt="{texto_banco}">
                         </div>
                         <div class="brand-title-text">
                             <span class="brand-title-main" style="color: #28a745;">Enlace</span>
@@ -227,4 +230,52 @@ if monto_limpio > 0:
     with col_b:
         tasa_max = tasas[-1]
         total_max = monto_limpio / (1 - tasa_max)
-        st
+        st.metric(label=f"Monto Máximo Cobrado ({texto_banco})", value=f"${total_max:,.2f}", delta="Todo Incluido")
+
+    st.divider()
+    
+    # 5. Opciones para el Cliente
+    st.write("### 📋 Tabla de Cotizaciones para el Cliente")
+    st.caption(f"Valores preferenciales processed mediante la red de pago {texto_banco}")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    list_a_digitar = []
+    list_total_retenido = []
+
+    for i in range(len(plazos)):
+        plazo = plazos[i]
+        tasa = tasas[i]
+        icono = iconos[i]
+        
+        monto_total = monto_limpio / (1 - tasa)
+        pago_mensual = monto_total / (1 if "Contado" in plazo else int(plazo.split()[0]))
+        
+        list_a_digitar.append(f"${monto_total:,.2f}")
+        list_total_retenido.append(f"${monto_total - monto_limpio:,.2f}")
+        
+        target_col = [col1, col2, col3][i % 3]
+        with target_col:
+            st.markdown(f"""
+                <div class="client-card" style="border-top: 5px solid {color_banco};">
+                    <h3 style='margin:0; color:{color_banco};'>{icono} {plazo}</h3>
+                    <p style='margin:10px 0; font-size:1.1em; color:#555;'>Monto Total con Tarjeta:</p>
+                    <h4 style='margin:0; color:#333;'>${monto_total:,.2f}</h4>
+                    <hr>
+                    <p style='margin:5px 0; font-size:1.3em;'><strong>Paga Mensual:</strong></p>
+                    <h1 style='margin:0; color:#1e2630;'>${pago_mensual:,.2f}</h1>
+                </div>
+            """, unsafe_allow_html=True)
+
+    # 6. Sección Interna Oculta para la Terminal
+    st.sidebar.markdown("---")
+    with st.sidebar.expander("🔐 DATOS DE TERMINAL (SÓLO TÚ)"):
+        st.table({
+            "Plazo": plazos,
+            "A Digitar": list_a_digitar,
+            "Total Retenido": list_total_retenido
+        })
+else:
+    st.info("👋 ¡Bienvenido! Ingresa la cantidad neta y selecciona el tipo de tarjeta en la barra lateral.")
+
+st.caption("© 2026 pixel_gb.dev | Soluciones Digitales Inteligentes")

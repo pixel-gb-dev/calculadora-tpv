@@ -5,7 +5,7 @@ import time
 # 1. Configuración de Marca Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS Avanzado: Modales premium con inyección de marcas vectoriales y efectos de alta fidelidad
+# CSS Avanzado: Modales premium con inyección de marcas y efectos de alta fidelidad (Fiel a la imagen)
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
@@ -36,7 +36,6 @@ st.markdown("""
         border: 2px solid #004488;
         box-shadow: 0 20px 50px rgba(0,0,0,0.7);
         width: 90%;
-        max-content: 520px;
         max-width: 520px;
         overflow: hidden;
     }
@@ -44,7 +43,7 @@ st.markdown("""
     /* --- ENCABEZADO IDÉNTICO A LA IMAGEN (BLANCO PURO) --- */
     .modal-header-brand {
         background-color: #ffffff;
-        padding: 20px 25px;
+        padding: 15px 25px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -53,7 +52,10 @@ st.markdown("""
     .brand-logo-container {
         display: flex;
         align-items: center;
-        height: 40px;
+    }
+    .brand-logo-img {
+        height: 32px;
+        object-fit: contain;
     }
     .brand-title-text {
         text-align: right;
@@ -62,13 +64,13 @@ st.markdown("""
     }
     .brand-title-main {
         color: #000000;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 500;
         display: block;
     }
     .brand-title-sub {
         color: #000000;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 700;
         display: block;
     }
@@ -81,8 +83,9 @@ st.markdown("""
     .modal-body-content p {
         color: #ffffff;
         font-family: system-ui, -apple-system, sans-serif;
-        font-size: 1.1em;
+        font-size: 1.05em;
         margin: 0 0 25px 0;
+        line-height: 1.4;
     }
 
     /* --- DISEÑO DE BARRA DE PROGRESO DE LA IMAGEN --- */
@@ -92,7 +95,7 @@ st.markdown("""
     }
     progress {
         width: 100%;
-        height: 28px;
+        height: 26px;
         display: block;
         -webkit-appearance: none;
         appearance: none;
@@ -114,7 +117,7 @@ st.markdown("""
         transform: translate(-50%, -50%);
         color: #ffffff;
         font-family: system-ui, sans-serif;
-        font-size: 0.95em;
+        font-size: 0.9em;
         font-weight: bold;
     }
     </style>
@@ -138,52 +141,41 @@ else:
 
 st.write("---")
 
+# DECLARACIÓN GLOBAL DE VARIABLES PARA EVITAR EL NAMEERROR
+plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
+iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
+
 if monto_limpio > 0:
     
-    # --- CONFIGURACIÓN DE OPERACIONES Y ELEMENTOS VECTORIALES ---
+    # --- ASIGNACIÓN DE TASAS E IMÁGENES DE MARCA ---
     if tipo_tarjeta == "BBVA / Visa / Mastercard":
-        plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
         tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
         texto_banco = "BBVA"
         color_banco = "#004488"
-        # SVG Oficial Vectorial de BBVA
-        svg_logo = """
-        <svg width="140" height="35" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0H7.2C11.8 0 14.8 2.2 14.8 5.8C14.8 8.2 13.4 10.2 10.8 11.2C13.8 12.2 15.6 14.4 15.6 17.4C15.6 21.4 12.2 24H0V0ZM4.4 4V9.6H7C9.2 9.6 10.4 8.6 10.4 6.8C10.4 5 9.2 4 7 4H4.4ZM4.4 13.6V20H7.4C9.8 20 11.2 18.8 11.2 16.8C11.2 14.8 9.8 13.6 7.4 13.6H4.4Z" fill="#004488"/>
-            <path d="M19.2 0H26.4C31 0 34 2.2 34 5.8C34 8.2 32.6 10.2 30 11.2C33 12.2 34.8 14.4 34.8 17.4C34.8 21.4 31.4 24 19.2 24H19.2V0ZM23.6 4V9.6H26.2C28.4 9.6 29.6 8.6 29.6 6.8C29.6 5 28.4 4 26.2 4H23.6ZM23.6 13.6V20H26.6C29 20 30.4 18.8 30.4 16.8C30.4 14.8 29 13.6 26.6 13.6H23.6Z" fill="#004488"/>
-            <path d="M46.8 0H51.2L57.2 24H52.4L51.2 18.8H44.8L43.6 24H38.8L44.8 0H46.8ZM45.6 14.8H50.4L48 5.2L45.6 14.8Z" fill="#004488"/>
-            <path d="M61.2 0H65.6L71.2 16.4L76.8 0H81.2L73.4 24H69L61.2 0Z" fill="#004488"/>
-        </svg>
-        """
+        # URL de imagen limpia oficial de BBVA
+        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/BBVA_Logo.svg/320px-BBVA_Logo.svg"
     else:
-        plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
         tasas = [0.04466, 0.09802, 0.13630, 0.17574, 0.20646]
         texto_banco = "American Express"
         color_banco = "#0076a5"
-        # SVG Oficial Vectorial de AMEX
-        svg_logo = """
-        <svg width="130" height="35" viewBox="0 0 100 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="30" rx="4" fill="#0076A5"/>
-            <text x="10" y="21" fill="#FFFFFF" font-family="'Arial Black', Impact, sans-serif" font-size="15" font-weight="900" letter-spacing="0.5">AMEX</text>
-        </svg>
-        """
+        # URL de imagen limpia oficial de AMEX
+        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_2018.svg/240px-American_Express_logo_2018.svg"
 
-    # --- EFECTO VISUAL DE POP-UP FIEL A LA REFERENCIA (5 SEGUNDOS) ---
+    # --- EFECTO VISUAL DE POP-UP CENTRADO (5 SEGUNDOS) ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
         placeholder = st.empty()
         
-        # Animación fluida de 10 segmentos para simular carga interactiva
-        for i in range(11):
-            porcentaje = i * 10
+        # Animación de 10 pasos fluidos
+        for i_step in range(11):
+            porcentaje = i_step * 10
             placeholder.markdown(f"""
                 <div class="modal-backdrop">
                     <div class="modal-box" style="border-color: {color_banco};">
                         <div class="modal-header-brand">
                             <div class="brand-logo-container">
-                                {svg_logo}
+                                <img src="{url_logo}.png" class="brand-logo-img" alt="{texto_banco}">
                             </div>
-                            <div class="brand-shadow-divider" style="width: 2px; height: 30px; background-color: #e2e8f0; margin: 0 15px;"></div>
                             <div class="brand-title-text">
                                 <span class="brand-title-main">Sincronizando</span>
                                 <span class="brand-title-sub">Interfaz</span>
@@ -201,13 +193,13 @@ if monto_limpio > 0:
             """, unsafe_allow_html=True)
             time.sleep(0.5)
             
-        # Modal de éxito en sincronización cifrada
+        # Pantalla final de éxito
         placeholder.markdown(f"""
             <div class="modal-backdrop">
                 <div class="modal-box" style="border-color: #28a745;">
                     <div class="modal-header-brand">
                         <div class="brand-logo-container">
-                            {svg_logo}
+                            <img src="{url_logo}.png" class="brand-logo-img" alt="{texto_banco}">
                         </div>
                         <div class="brand-title-text">
                             <span class="brand-title-main" style="color: #28a745;">Enlace</span>
@@ -215,8 +207,8 @@ if monto_limpio > 0:
                         </div>
                     </div>
                     <div class="modal-body-content">
-                        <p style="color: #28a745; font-weight: bold;">Sincronización Exitosa (Base {texto_banco} Oficial)</p>
-                        <div style="font-size: 3.5em; margin-top: 5px;">✅</div>
+                        <p style="color: #28a745; font-weight: bold; margin-bottom: 10px;">Sincronización Exitosa (Base {texto_banco} Oficial)</p>
+                        <div style="font-size: 3em; margin-top: 5px;">✅</div>
                     </div>
                 </div>
             </div>
@@ -235,52 +227,4 @@ if monto_limpio > 0:
     with col_b:
         tasa_max = tasas[-1]
         total_max = monto_limpio / (1 - tasa_max)
-        st.metric(label=f"Monto Máximo Cobrado ({texto_banco})", value=f"${total_max:,.2f}", delta="Todo Incluido")
-
-    st.divider()
-    
-    # 5. Opciones para el Cliente
-    st.write("### 📋 Tabla de Cotizaciones para el Cliente")
-    st.caption(f"Valores preferenciales procesados mediante la red de pago {texto_banco}")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    list_a_digitar = []
-    list_total_retenido = []
-
-    for i in range(len(plazos)):
-        plazo = plazos[i]
-        tasa = tasas[i]
-        icono = iconos[i]
-        
-        monto_total = monto_limpio / (1 - tasa)
-        pago_mensual = monto_total / (1 if "Contado" in plazo else int(plazo.split()[0]))
-        
-        list_a_digitar.append(f"${monto_total:,.2f}")
-        list_total_retenido.append(f"${monto_total - monto_limpio:,.2f}")
-        
-        target_col = [col1, col2, col3][i % 3]
-        with target_col:
-            st.markdown(f"""
-                <div class="client-card" style="border-top: 5px solid {color_banco};">
-                    <h3 style='margin:0; color:{color_banco};'>{icono} {plazo}</h3>
-                    <p style='margin:10px 0; font-size:1.1em; color:#555;'>Monto Total con Tarjeta:</p>
-                    <h4 style='margin:0; color:#333;'>${monto_total:,.2f}</h4>
-                    <hr>
-                    <p style='margin:5px 0; font-size:1.3em;'><strong>Paga Mensual:</strong></p>
-                    <h1 style='margin:0; color:#1e2630;'>${pago_mensual:,.2f}</h1>
-                </div>
-            """, unsafe_allow_html=True)
-
-    # 6. Sección Interna Oculta para la Terminal
-    st.sidebar.markdown("---")
-    with st.sidebar.expander("🔐 DATOS DE TERMINAL (SÓLO TÚ)"):
-        st.table({
-            "Plazo": plazos,
-            "A Digitar": list_a_digitar,
-            "Total Retenido": list_total_retenido
-        })
-else:
-    st.info("👋 ¡Bienvenido! Ingresa la cantidad neta y selecciona el tipo de tarjeta en la barra lateral.")
-
-st.caption("© 2026 pixel_gb.dev | Soluciones Digitales Inteligentes")
+        st

@@ -1,11 +1,11 @@
 import streamlit as st
-from PIL import Image  # Necesaria para manejar imágenes visualmente
+import os  # Para verificar la imagen header.png de forma segura
 import time
 
-# 1. Configuración de Marca y Estilo
+# 1. Configuración de Marca y Estilo Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS Avanzado para mejorar visualmente las tarjetas y métricas
+# CSS para el look visual y moderno
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
@@ -18,7 +18,7 @@ st.markdown("""
         color: #1e2630; 
         margin-bottom: 20px;
         box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        border-top: 5px solid #004488; /* Detalle de color visual */
+        border-top: 5px solid #004488;
     }
     [data-testid="stSidebar"] {
         background-color: #11141a;
@@ -31,20 +31,18 @@ st.markdown("""
 with st.sidebar:
     st.markdown("### ⚙️ Herramientas de pixel_gb.dev")
     st.write("---")
-    monto_limpio = st.number_input("¿Cuánto deseas recibir libre? ($)", min_value=0.0, step=1000.0, value=10000.0)
+    monto_limpio = st.number_input("¿Cuánto deseas recibir libre? ($)", min_value=0.0, step=1000.0, value=0.0)
     st.divider()
     st.write("🔧 **Base BBVA 2026**")
-    st.caption("Comisiones y sobretasas actualizadas.")
+    st.caption("Comisiones y sobretasas fijas.")
 
-# 3. Encabezado Principal (AQUÍ ESTÁ EL CAMBIO VISUAL)
-# Intentamos cargar la imagen diseñada por ti
-try:
-    # use_container_width=True asegura que se adapte al ancho del celular
-    st.image("header.png", use_container_width=True) 
-except FileNotFoundError:
-    # Si aún no subes la imagen, mostramos un título elegante de respaldo
-    st.title("📈 pixel_gb.dev | TPV Calculator")
-    st.caption("💡 Sube tu imagen 'header.png' a GitHub para verla aquí.")
+# 3. Encabezado de Imagen Seguro
+# Si ya renombraste el archivo a header.png, lo cargará en automático
+if os.path.exists("header.png"):
+    st.image("header.png", use_container_width=True)
+else:
+    st.title("🚀 pixel_gb.dev")
+    st.info("💡 Tip visual: Asegúrate de que tu diseño en GitHub se llame exactamente 'header.png' (sin el doble .png.png) para que reemplace este título.")
 
 st.write("---")
 
@@ -55,10 +53,9 @@ if monto_limpio > 0:
     with col_a:
         st.metric(label="Tu Depósito NETO (Libre)", value=f"${monto_limpio:,.2f}")
     with col_b:
-        # Tasa de 12 meses como referencia máxima
         tasa_max = 0.208
         total_max = monto_limpio / (1 - tasa_max)
-        st.metric(label="Monto Máximo Sugerido", value=f"${total_max:,.2f}", delta="Financiado (Aprox)")
+        st.metric(label="Monto Máximo Sugerido", value=f"${total_max:,.2f}", delta="Financiado (12M)")
 
     st.divider()
     
@@ -66,29 +63,29 @@ if monto_limpio > 0:
     st.write("### 📋 Tabla de Cotizaciones para el Cliente")
     st.write("Muestra estas mensualidades elegantes:")
     
-    # Creamos columnas para una distribución visual
     col1, col2, col3 = st.columns(3)
     
+    # IMPORTANTE: Volvemos al formato numérico al inicio para evitar el ValueError
     tasas = {
-        "Pago de Contado": 0.029,
-        "A 3 Meses": 0.081,
-        "A 6 Meses": 0.123,
-        "A 9 Meses": 0.165,
-        "A 12 Meses": 0.208
+        "Contado": 0.029,
+        "3 Meses": 0.081,
+        "6 Meses": 0.123,
+        "9 Meses": 0.165,
+        "12 Meses": 0.208
     }
 
-    # Íconos visuales (Unicode) para cada opción
     iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
 
-    # Ciclo para generar las tarjetas visuales
     for i, (plazo, tasa) in enumerate(tasas.items()):
         monto_total = monto_limpio / (1 - tasa)
+        
+        # Aquí la matemática ya no se rompe porque "Contado" se va directo a 1, 
+        # y para los demás extrae el número inicial ("3", "6", etc.) de forma limpia.
         pago_mensual = monto_total / (1 if "Contado" in plazo else int(plazo.split()[0]))
         
         target_col = [col1, col2, col3][i % 3]
         
         with target_col:
-            # HTML y CSS personalizados para una tarjeta "Visual"
             st.markdown(f"""
                 <div class="client-card">
                     <h3 style='margin:0; color:#004488;'>{iconos[i]} {plazo}</h3>
@@ -100,7 +97,7 @@ if monto_limpio > 0:
                 </div>
             """, unsafe_allow_html=True)
 
-    # 6. Sección Interna Protegida (Menos visual, más técnica)
+    # 6. Sección Interna Protegida en la Barra Lateral
     st.sidebar.markdown("---")
     with st.sidebar.expander("🔐 DATOS DE TERMINAL (SÓLO TÚ)"):
         st.table({
@@ -109,6 +106,6 @@ if monto_limpio > 0:
         })
 
 else:
-    st.info("👋 ¡Bienvenido! Ingresa la cantidad neta que deseas ganar en la barra lateral.")
+    st.info("👋 ¡Bienvenido! Ingresa la cantidad neta que deseas ganar en la barra lateral para activar las tarjetas.")
 
-st.caption("© 2026 pixel_gb.dev | Innovación Digital de Gilberto Barboza")
+st.caption("© 2026 pixel_gb.dev | Soluciones Digitales Inteligentes")

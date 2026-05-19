@@ -5,7 +5,7 @@ import time
 # 1. Configuración de Marca Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS Avanzado: Inyección de Modales Premium con efectos Glassmorphism e Identidad de Marca
+# CSS Avanzado: Interfaz Premium con efecto Pop-up, Desenfoque de fondo (Fiel a la imagen)
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
@@ -19,110 +19,79 @@ st.markdown("""
     }
     [data-testid="stSidebar"] { background-color: #11141a; border-right: 1px solid #3e4a5b; }
     
-    /* --- EFECTO VISUAL DE POP-UP (MODAL) Y BACKDROP BLUR --- */
-    .modal-backdrop {
+    /* --- CONTENEDOR FLOTANTE DE ALTA FIDELIDAD (POP-UP) --- */
+    .custom-modal-bg {
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
-        background-color: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(6px);
-        z-index: 99999;
+        background-color: rgba(4, 6, 10, 0.8);
+        backdrop-filter: blur(8px);
+        z-index: 999999;
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    .modal-box {
+    .custom-modal-box {
         background-color: #141923;
         border-radius: 16px;
         border: 2px solid #004488;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.8);
         width: 90%;
-        max-width: 520px;
+        max-width: 500px;
         overflow: hidden;
+        animation: fadeIn 0.3s ease-out;
     }
-
-    /* --- ENCABEZADO IDÉNTICO A LA IMAGEN (BLANCO PURO) --- */
-    .modal-header-brand {
+    
+    /* CABECERA BLANCA IDÉNTICA A LA IMAGEN */
+    .custom-modal-header {
         background-color: #ffffff;
-        padding: 18px 25px;
+        padding: 20px 25px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #e2e8f0;
-        height: 80px;
     }
-    .brand-logo-container {
+    .logo-slot {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
     }
-    .brand-logo-img {
-        max-height: 35px;
-        width: auto;
-        display: block;
-    }
-    .brand-title-text {
+    .text-slot {
         text-align: right;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        line-height: 1.1;
+        line-height: 1.2;
     }
-    .brand-title-main {
-        color: #000000;
-        font-size: 22px;
-        font-weight: 500;
-        display: block;
-    }
-    .brand-title-sub {
-        color: #000000;
-        font-size: 22px;
-        font-weight: 700;
-        display: block;
-    }
-
-    /* --- CUERPO DEL MODAL --- */
-    .modal-body-content {
-        padding: 30px 25px;
+    .text-slot-main { color: #000000; font-size: 22px; font-weight: 400; display: block; }
+    .text-slot-sub { color: #000000; font-size: 22px; font-weight: 700; display: block; }
+    
+    /* CUERPO DEL MODAL RECONSTRUIDO */
+    .custom-modal-body {
+        padding: 35px 25px;
         text-align: center;
     }
-    .modal-body-content p {
+    .custom-modal-body p {
         color: #ffffff;
         font-family: system-ui, -apple-system, sans-serif;
-        font-size: 1.05em;
+        font-size: 1.1em;
         margin: 0 0 25px 0;
-        line-height: 1.4;
+        line-height: 1.5;
+    }
+    
+    /* FORZAR ESTILOS A LA BARRA DE PROGRESO NATIVA DE STREAMLIT PARA AJUSTARLA A LA IMAGEN */
+    .stProgress > div > div {
+        background-color: #0d1117 !important;
+        height: 28px !important;
+        border-radius: 14px !important;
+        border: 1px solid #1f293d !important;
+        overflow: hidden !important;
+    }
+    .stProgress > div > div > div {
+        background: linear-gradient(180deg, #0099ff 0%, #004488 100%) !important;
+        border-radius: 12px !important;
     }
 
-    /* --- DISEÑO DE BARRA DE PROGRESO DE LA IMAGEN RECONSTRUIDO --- */
-    .progress-wrapper {
-        position: relative;
-        width: 100%;
-    }
-    progress {
-        width: 100%;
-        height: 28px;
-        display: block;
-        -webkit-appearance: none;
-        appearance: none;
-    }
-    progress::-webkit-progress-bar {
-        background-color: #0d1117;
-        border-radius: 14px;
-        border: 1px solid #1f293d;
-        padding: 2px;
-    }
-    progress::-webkit-progress-value {
-        background: linear-gradient(180deg, #0088ff 0%, #004488 100%);
-        border-radius: 12px;
-    }
-    .progress-text-overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #ffffff;
-        font-family: system-ui, sans-serif;
-        font-size: 0.95em;
-        font-weight: bold;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -145,81 +114,88 @@ else:
 
 st.write("---")
 
-# CONTROL DE FLUJO Y VARIABLES GLOBALES
+# DECLARACIÓN GLOBAL DE CONTROL DE ARRAYS
 plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
 iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
 
 if monto_limpio > 0:
     
-    # --- LOGOS EMBEBIDOS EN FORMATO BASE64 DATA-URI REALES ---
+    # --- ASIGNACIÓN DE PARÁMETROS GRÁFICOS VECTORIALES (LOGOS EXACTOS) ---
     if tipo_tarjeta == "BBVA / Visa / Mastercard":
         tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
         texto_banco = "BBVA"
         color_banco = "#004488"
-        # Logotipo vectorial optimizado embebido
-        base64_logo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30' fill='%23004488'><path d='M0 0h7.2c4.6 0 7.6 2.2 7.6 5.8 0 2.4-1.4 4.4-4 5.4 2.6 1 4.4 3.2 4.4 6.2 0 4-3.4 6.6-11.6 6.6H0V0zm4.4 4v5.6h2.6c2.2 0 3.4-1 3.4-2.8 0-1.8-1.2-2.8-3.4-2.8H4.4zm0 9.6V20h3c2.4 0 3.8-1.2 3.8-3.2 0-2-1.4-3.2-3.8-3.2h-3zM19.2 0h7.2c4.6 0 7.6 2.2 7.6 5.8 0 2.4-1.4 4.4-4 5.4 2.6 1 4.4 3.2 4.4 6.2 0 4-3.4 6.6-11.6 6.6H19.2V0zm4.4 4v5.6h2.6c2.2 0 3.4-1 3.4-2.8 0-1.8-1.2-2.8-3.4-2.8H23.6zm0 9.6V20h3c2.4 0 3.8-1.2 3.8-3.2 0-2-1.4-3.2-3.8-3.2h-3zM46.8 0h4.4l6 24h-4.8l-1.2-5.2H44.8L43.6 24h-4.8L44.8 0H46.8zm-1.2 14.8h4.8L48 5.2l-2.4 9.6zM61.2 0h4.4l5.6 16.4L76.8 0h4.4L73.4 24H69l-7.8-24z'/></svg>"
+        # SVG nativo exacto de BBVA con dimensiones fijas de lectura
+        html_logo = """
+        <svg width="120" height="30" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <path d="M0 0h8.4c4.8 0 7.8 2.2 7.8 5.8 0 2.4-1.4 4.4-4.2 5.4 2.8 1 4.6 3.2 4.6 6.2 0 4-3.6 6.6-12.2 6.6H0V0zm4.8 4.2V9.4h2.4c2 0 3.2-.8 3.2-2.6s-1.2-2.6-3.2-2.6H4.8zm0 9.2v6.8h2.8c2.2 0 3.6-1 3.6-3.4 0-2.4-1.4-3.4-3.6-3.4H4.8zM21.6 0h8.4c4.8 0 7.8 2.2 7.8 5.8 0 2.4-1.4 4.4-4.2 5.4 2.8 1 4.6 3.2 4.6 6.2 0 4-3.6 6.6-12.2 6.6h-4.4V0zm4.8 4.2V9.4h2.4c2 0 3.2-.8 3.2-2.6s-1.2-2.6-3.2-2.6h-2.4zm0 9.2v6.8h2.8c2.2 0 3.6-1 3.6-3.4 0-2.4-1.4-3.4-3.6-3.4h-2.8zM51.6 0h4.8l6.4 24h-5.2l-1.2-5.4H49.6L48.4 24h-5.2L49.6 0zm-1.2 14.4h5.2L53.2 4.8l-2.8 9.6zM67.2 0h4.8l6 16.4L84 0h4.8L80.4 24h-4.8l-8.4-24z" fill="#004488"/>
+        </svg>
+        """
     else:
         tasas = [0.04466, 0.09802, 0.13630, 0.17574, 0.20646]
         texto_banco = "American Express"
         color_banco = "#0076a5"
-        # Isotipo de American Express embebido
-        base64_logo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30'><rect width='100' height='30' rx='4' fill='%230076A5'/><text x='12' y='21' fill='%23FFFFFF' font-family='sans-serif' font-weight='900' font-size='14' letter-spacing='0.5'>AMEX</text></svg>"
+        # SVG nativo estilizado de la caja AMEX
+        html_logo = """
+        <svg width="110" height="32" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+            <rect width="100" height="30" rx="4" fill="#0076A5"/>
+            <text x="50" y="21" fill="#FFFFFF" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="900" font-size="15" letter-spacing="0.5" text-anchor="middle">AMEX</text>
+        </svg>
+        """
 
-    # --- EFECTO VISUAL DE POP-UP CENTRADO (5 SEGUNDOS) ---
+    # --- EFECTO VISUAL DE POP-UP CENTRADO CROMETRICAMENTE BLINDADO ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
-        placeholder = st.empty()
+        # Creamos la inyección estructural del marco de fondo fijo y la caja blanca superior
+        modal_placeholder = st.empty()
         
-        # Animación de 10 segmentos fluidos
-        for i_step in range(11):
-            porcentaje = i_step * 10
-            placeholder.markdown(f"""
-                <div class="modal-backdrop">
-                    <div class="modal-box" style="border-color: {color_banco};">
-                        <div class="modal-header-brand">
-                            <div class="brand-logo-container">
-                                <img src="{base64_logo}" class="brand-logo-img" alt="{texto_banco}">
+        # Ejecutamos la animación en 10 iteraciones limpias acopladas al loop seguro
+        for percent in range(0, 101, 10):
+            with modal_placeholder.container():
+                st.markdown(f"""
+                    <div class="custom-modal-bg">
+                        <div class="custom-modal-box" style="border-color: {color_banco};">
+                            <div class="custom-modal-header">
+                                <div class="logo-slot">{html_logo}</div>
+                                <div class="text-slot">
+                                    <span class="text-slot-main">Sincronizando</span>
+                                    <span class="text-slot-sub">Interfaz</span>
+                                </div>
                             </div>
-                            <div class="brand-title-text">
-                                <span class="brand-title-main">Sincronizando</span>
-                                <span class="brand-title-sub">Interfaz</span>
+                            <div class="custom-modal-body">
+                                <p>Conectando de forma segura con los servidores de información de {texto_banco}...</p>
+                                <div style="text-align: left; color:#a0aec0; margin-bottom:5px; font-weight:bold; font-size:0.9em;">Progreso: {percent}%</div>
                             </div>
                         </div>
-                        <div class="modal-body-content">
-                            <p>Conectando de forma segura con los servidores de información de {texto_banco}...</p>
-                            <div class="progress-wrapper">
-                                <progress value="{porcentaje}" max="100"></progress>
-                                <span class="progress-text-overlay">{porcentaje}%</span>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                # Renderizamos la barra de progreso de Streamlit de forma interna, pero el CSS de arriba la intercepta y le da el look exacto de la imagen
+                st.progress(percent / 100)
+                time.sleep(0.4) # 0.4s * 11 pasos = ~4.5 a 5 segundos perfectos
+                
+        # Mostrar pantalla corta de éxito rotundo
+        with modal_placeholder.container():
+            st.markdown(f"""
+                <div class="custom-modal-bg">
+                    <div class="custom-modal-box" style="border-color: #28a745;">
+                        <div class="custom-modal-header">
+                            <div class="logo-slot">{html_logo}</div>
+                            <div class="text-slot">
+                                <span class="text-slot-main" style="color: #28a745;">Enlace</span>
+                                <span class="text-slot-sub" style="color: #28a745;">Exitoso</span>
                             </div>
+                        </div>
+                        <div class="custom-modal-body">
+                            <p style="color: #28a745; font-weight: bold;">Sincronización Exitosa (Base {texto_banco} Oficial)</p>
+                            <div style="font-size: 3em; margin-top: 10px;">✅</div>
                         </div>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-            time.sleep(0.5)
-            
-        # Modal de éxito en sincronización cifrada
-        placeholder.markdown(f"""
-            <div class="modal-backdrop">
-                <div class="modal-box" style="border-color: #28a745;">
-                    <div class="modal-header-brand">
-                        <div class="brand-logo-container">
-                            <img src="{base64_logo}" class="brand-logo-img" alt="{texto_banco}">
-                        </div>
-                        <div class="brand-title-text">
-                            <span class="brand-title-main" style="color: #28a745;">Enlace</span>
-                            <span class="brand-title-sub" style="color: #28a745;">Exitoso</span>
-                        </div>
-                    </div>
-                    <div class="modal-body-content">
-                        <p style="color: #28a745; font-weight: bold; margin-bottom: 10px;">Sincronización Exitosa (Base {texto_banco} Oficial)</p>
-                        <div style="font-size: 3em; margin-top: 5px;">✅</div>
-                    </div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        time.sleep(1.2)
-        placeholder.empty() 
+            time.sleep(1.2)
+
+        modal_placeholder.empty()
         st.session_state[session_key] = True
         st.rerun()
 

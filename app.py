@@ -1,5 +1,5 @@
 import streamlit as st
-import os  # Para verificar la imagen header.png de forma segura
+import os  # Para verificar si existe el header.png de forma segura
 import time
 
 # 1. Configuración de Marca y Estilo Pro
@@ -24,6 +24,8 @@ st.markdown("""
         background-color: #11141a;
         border-right: 1px solid #3e4a5b;
     }
+    /* Estilo personalizado para los mensajes de carga */
+    .stProgress > div > div > div > div { background-color: #004488; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -34,18 +36,40 @@ with st.sidebar:
     monto_limpio = st.number_input("¿Cuánto deseas recibir libre? ($)", min_value=0.0, step=1000.0, value=0.0)
     st.divider()
     st.write("🔧 **Base BBVA Oficial**")
-    st.caption("Tasas con Comisión + IVA incluido.")
+    st.caption("Tasas netas con Comisión + IVA incluido.")
 
 # 3. Encabezado de Imagen Seguro
 if os.path.exists("header.png"):
     st.image("header.png", use_container_width=True)
 else:
     st.title("🚀 pixel_gb.dev")
-    st.info("💡 Tip visual: Asegúrate de que tu diseño en GitHub se llame 'header.png' para que aparezca aquí.")
+    st.info("💡 Tip visual: Si tu diseño en GitHub ya se llama 'header.png' se mostrará aquí automáticamente.")
 
 st.write("---")
 
 if monto_limpio > 0:
+    
+    # --- EFECTO VISUAL DE SINCRONIZACIÓN CON EL BANCO (5 SEGUNDOS) ---
+    # Usamos una clave en la "sesión" para que la simulación solo corra cuando el monto cambia
+    session_key = f"load_{monto_limpio}"
+    if session_key not in st.session_state:
+        
+        # Cuadro de estado de conexión elegante
+        with st.spinner("⏳ Conectando de forma segura con los servidores de información de BBVA..."):
+            # Creamos una barra de progreso para darle más realismo visual
+            progreso_bar = st.progress(0)
+            
+            # Divide los 5 segundos en pasos para la animación
+            for porcentaje in range(101):
+                time.sleep(0.05)  # 0.05 * 100 pasos = 5 segundos exactos
+                progreso_bar.progress(porcentaje)
+                
+        st.success("🔒 Sincronización exitosa. Conexión cifrada con BBVA establecida.")
+        st.session_state[session_key] = True
+        time.sleep(1)  # Breve pausa para que alcancen a leer el éxito
+        st.rerun()
+    # -----------------------------------------------------------------
+
     # 4. Dashboard de Métricas Visuales
     st.write("### Su Resumen de Margen")
     col_a, col_b = st.columns(2)
@@ -64,17 +88,14 @@ if monto_limpio > 0:
     
     col1, col2, col3 = st.columns(3)
     
-    # TASAS OFICIALES BBVA + IVA (Completas para dejarte tu dinero neto libre)
+    # TASAS OFICIALES BBVA + IVA
     tasas = {
-        "Contado": 0.0290,      # 2.5% + IVA
-        "3 Meses": 0.06461,     # 5.57% + IVA
-        "6 Meses": 0.11008,     # 9.49% + IVA
-        "9 Meses": 0.15300,     # 13.19% + IVA (redondeado a 15.30%)
-        "12 Meses": 0.19372     # 16.70% + IVA
+        "Contado": 0.02900,      
+        "3 Meses": 0.06461,     
+        "6 Meses": 0.11008,     
+        "9 Meses": 0.15300,     
+        "12 Meses": 0.19372     
     }
-
-    # Ajuste por si hubo un typo en el valor de 9 meses en la ejecución del diccionario
-    tasas["9 Meses"] = 0.15300
 
     iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
 

@@ -5,7 +5,7 @@ import time
 # 1. Configuración de Marca Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS Avanzado: Interfaz Premium con efecto Pop-up, Desenfoque de fondo (Fiel a la imagen)
+# CSS Avanzado: Copiado exacto de las reglas visuales de tu imagen de referencia
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
@@ -19,13 +19,13 @@ st.markdown("""
     }
     [data-testid="stSidebar"] { background-color: #11141a; border-right: 1px solid #3e4a5b; }
     
-    /* --- CONTENEDOR FLOTANTE DE ALTA FIDELIDAD (POP-UP) --- */
+    /* --- ESTRUCTURA DEL MODAL (POP-UP) FIEL A LA IMAGEN --- */
     .custom-modal-bg {
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
-        background-color: rgba(4, 6, 10, 0.8);
+        background-color: rgba(4, 6, 10, 0.85);
         backdrop-filter: blur(8px);
-        z-index: 999999;
+        z-index: 99999;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -33,22 +33,22 @@ st.markdown("""
     .custom-modal-box {
         background-color: #141923;
         border-radius: 16px;
-        border: 2px solid #004488;
         box-shadow: 0 25px 60px rgba(0,0,0,0.8);
         width: 90%;
         max-width: 500px;
         overflow: hidden;
-        animation: fadeIn 0.3s ease-out;
     }
     
-    /* CABECERA BLANCA IDÉNTICA A LA IMAGEN */
+    /* CABECERA BLANCA CON LOGO Y TEXTO DE TU IMAGEN */
     .custom-modal-header {
         background-color: #ffffff;
-        padding: 20px 25px;
+        padding: 15px 25px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #e2e8f0;
+        height: 85px;
+        box-sizing: border-box;
     }
     .logo-slot {
         display: flex;
@@ -60,38 +60,68 @@ st.markdown("""
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         line-height: 1.2;
     }
-    .text-slot-main { color: #000000; font-size: 22px; font-weight: 400; display: block; }
-    .text-slot-sub { color: #000000; font-size: 22px; font-weight: 700; display: block; }
+    .text-slot-main { color: #000000; font-size: 20px; font-weight: 400; display: block; }
+    .text-slot-sub { color: #000000; font-size: 20px; font-weight: 700; display: block; }
     
-    /* CUERPO DEL MODAL RECONSTRUIDO */
+    /* CUERPO DEL POP-UP */
     .custom-modal-body {
-        padding: 35px 25px;
+        padding: 30px 25px 35px 25px;
         text-align: center;
     }
     .custom-modal-body p {
         color: #ffffff;
         font-family: system-ui, -apple-system, sans-serif;
-        font-size: 1.1em;
-        margin: 0 0 25px 0;
+        font-size: 1.05em;
+        margin: 0 0 20px 0;
         line-height: 1.5;
     }
-    
-    /* FORZAR ESTILOS A LA BARRA DE PROGRESO NATIVA DE STREAMLIT PARA AJUSTARLA A LA IMAGEN */
-    .stProgress > div > div {
-        background-color: #0d1117 !important;
-        height: 28px !important;
-        border-radius: 14px !important;
-        border: 1px solid #1f293d !important;
-        overflow: hidden !important;
-    }
-    .stProgress > div > div > div {
-        background: linear-gradient(180deg, #0099ff 0%, #004488 100%) !important;
-        border-radius: 12px !important;
-    }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
+    /* --- DISEÑO DE BARRA DE PROGRESO DE LA IMAGEN (HTML PURO) --- */
+    .custom-progress-wrapper {
+        position: relative;
+        width: 100%;
+        text-align: center;
+    }
+    .custom-progress-bar-bg {
+        width: 100%;
+        height: 28px;
+        background-color: #0d1117;
+        border-radius: 14px;
+        border: 1px solid #1f293d;
+        overflow: hidden;
+        position: relative;
+        padding: 2px;
+        box-sizing: border-box;
+    }
+    .custom-progress-bar-value {
+        height: 100%;
+        background: linear-gradient(180deg, #0099ff 0%, #004488 100%);
+        border-radius: 11px;
+        transition: width 0.4s ease-out;
+    }
+    .custom-progress-text {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        color: #ffffff;
+        font-family: system-ui, sans-serif;
+        font-size: 0.95em;
+        font-weight: bold;
+        z-index: 2;
+    }
+    .success-icon-badge {
+        position: absolute;
+        right: 8px; top: 50%;
+        transform: translateY(-50%);
+        background-color: #28a745;
+        color: white;
+        border-radius: 50%;
+        width: 18px; height: 18px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -106,7 +136,7 @@ with st.sidebar:
     st.write(f"🔧 **Base actual: {tipo_tarjeta}**")
     st.caption("Comisión + IVA integrados para cálculo Neto.")
 
-# 3. Encabezado de Imagen Autónomo
+# 3. Encabezado de Imagen Principal (Tu Banner)
 if os.path.exists("header.png"):
     st.image("header.png", use_container_width=True)
 else:
@@ -114,86 +144,89 @@ else:
 
 st.write("---")
 
-# DECLARACIÓN GLOBAL DE CONTROL DE ARRAYS
+# DECLARACIÓN GLOBAL DE VARIABLES
 plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
 iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
 
 if monto_limpio > 0:
     
-    # --- ASIGNACIÓN DE PARÁMETROS GRÁFICOS VECTORIALES (LOGOS EXACTOS) ---
+    # --- RENDERIZADO VECTORIAL SEGURO DE LOGOS ---
     if tipo_tarjeta == "BBVA / Visa / Mastercard":
         tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
         texto_banco = "BBVA"
         color_banco = "#004488"
-        # SVG nativo exacto de BBVA con dimensiones fijas de lectura
+        # Logo institucional recreado en CSS/HTML con su tipografía clásica
         html_logo = """
-        <svg width="120" height="30" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-            <path d="M0 0h8.4c4.8 0 7.8 2.2 7.8 5.8 0 2.4-1.4 4.4-4.2 5.4 2.8 1 4.6 3.2 4.6 6.2 0 4-3.6 6.6-12.2 6.6H0V0zm4.8 4.2V9.4h2.4c2 0 3.2-.8 3.2-2.6s-1.2-2.6-3.2-2.6H4.8zm0 9.2v6.8h2.8c2.2 0 3.6-1 3.6-3.4 0-2.4-1.4-3.4-3.6-3.4H4.8zM21.6 0h8.4c4.8 0 7.8 2.2 7.8 5.8 0 2.4-1.4 4.4-4.2 5.4 2.8 1 4.6 3.2 4.6 6.2 0 4-3.6 6.6-12.2 6.6h-4.4V0zm4.8 4.2V9.4h2.4c2 0 3.2-.8 3.2-2.6s-1.2-2.6-3.2-2.6h-2.4zm0 9.2v6.8h2.8c2.2 0 3.6-1 3.6-3.4 0-2.4-1.4-3.4-3.6-3.4h-2.8zM51.6 0h4.8l6.4 24h-5.2l-1.2-5.4H49.6L48.4 24h-5.2L49.6 0zm-1.2 14.4h5.2L53.2 4.8l-2.8 9.6zM67.2 0h4.8l6 16.4L84 0h4.8L80.4 24h-4.8l-8.4-24z" fill="#004488"/>
-        </svg>
+        <div style="color: #004488; font-family: 'Arial Black', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: -2px; display: flex; align-items: center;">
+            <div style="width: 8px; height: 22px; background-color: #004488; margin-right: 5px; display: inline-block;"></div>
+            BBVA
+        </div>
         """
     else:
         tasas = [0.04466, 0.09802, 0.13630, 0.17574, 0.20646]
         texto_banco = "American Express"
         color_banco = "#0076a5"
-        # SVG nativo estilizado de la caja AMEX
+        # Logo de la tarjeta AMEX azul clásico recreado
         html_logo = """
-        <svg width="110" height="32" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-            <rect width="100" height="30" rx="4" fill="#0076A5"/>
-            <text x="50" y="21" fill="#FFFFFF" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="900" font-size="15" letter-spacing="0.5" text-anchor="middle">AMEX</text>
-        </svg>
+        <div style="background-color: #0076A5; color: #FFFFFF; font-family: 'Arial Black', sans-serif; font-size: 13px; font-weight: 900; padding: 6px 12px; border-radius: 4px; letter-spacing: 0.5px; display: inline-block;">
+            AMEX
+        </div>
         """
 
-    # --- EFECTO VISUAL DE POP-UP CENTRADO CROMETRICAMENTE BLINDADO ---
+    # --- SIMULACIÓN DEL POP-UP (5 SEGUNDOS) ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
-        # Creamos la inyección estructural del marco de fondo fijo y la caja blanca superior
         modal_placeholder = st.empty()
         
-        # Ejecutamos la animación en 10 iteraciones limpias acopladas al loop seguro
+        # Corremos la barra de progreso de 10% en 10%
         for percent in range(0, 101, 10):
-            with modal_placeholder.container():
-                st.markdown(f"""
-                    <div class="custom-modal-bg">
-                        <div class="custom-modal-box" style="border-color: {color_banco};">
-                            <div class="custom-modal-header">
-                                <div class="logo-slot">{html_logo}</div>
-                                <div class="text-slot">
-                                    <span class="text-slot-main">Sincronizando</span>
-                                    <span class="text-slot-sub">Interfaz</span>
-                                </div>
-                            </div>
-                            <div class="custom-modal-body">
-                                <p>Conectando de forma segura con los servidores de información de {texto_banco}...</p>
-                                <div style="text-align: left; color:#a0aec0; margin-bottom:5px; font-weight:bold; font-size:0.9em;">Progreso: {percent}%</div>
-                            </div>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                # Renderizamos la barra de progreso de Streamlit de forma interna, pero el CSS de arriba la intercepta y le da el look exacto de la imagen
-                st.progress(percent / 100)
-                time.sleep(0.4) # 0.4s * 11 pasos = ~4.5 a 5 segundos perfectos
-                
-        # Mostrar pantalla corta de éxito rotundo
-        with modal_placeholder.container():
-            st.markdown(f"""
-                <div class="custom-modal-bg">
-                    <div class="custom-modal-box" style="border-color: #28a745;">
+            # Condición visual para el check verde final que pusiste en tu diseño
+            badge_html = '<div class="success-icon-badge">✓</div>' if percent == 100 else ''
+            
+            modal_placeholder.markdown(f"""
+                <div class="modal-backdrop">
+                    <div class="custom-modal-box" style="border: 2px solid {color_banco};">
                         <div class="custom-modal-header">
                             <div class="logo-slot">{html_logo}</div>
                             <div class="text-slot">
-                                <span class="text-slot-main" style="color: #28a745;">Enlace</span>
-                                <span class="text-slot-sub" style="color: #28a745;">Exitoso</span>
+                                <span class="text-slot-main">Sincronizando</span>
+                                <span class="text-slot-sub">Interfaz</span>
                             </div>
                         </div>
                         <div class="custom-modal-body">
-                            <p style="color: #28a745; font-weight: bold;">Sincronización Exitosa (Base {texto_banco} Oficial)</p>
-                            <div style="font-size: 3em; margin-top: 10px;">✅</div>
+                            <p>Conectando de forma segura con los servidores de información de {texto_banco}...</p>
+                            <div class="custom-progress-wrapper">
+                                <div class="custom-progress-bar-bg">
+                                    <div class="custom-progress-bar-value" style="width: {percent}%;"></div>
+                                    <span class="custom-progress-text">{percent}%</span>
+                                    {badge_html}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-            time.sleep(1.2)
+            time.sleep(0.4)
+            
+        # Breve mensaje de éxito centrado
+        modal_placeholder.markdown(f"""
+            <div class="modal-backdrop">
+                <div class="custom-modal-box" style="border: 2px solid #28a745;">
+                    <div class="custom-modal-header">
+                        <div class="logo-slot">{html_logo}</div>
+                        <div class="text-slot">
+                            <span class="text-slot-main" style="color: #28a745;">Enlace</span>
+                            <span class="text-slot-sub" style="color: #28a745;">Exitoso</span>
+                        </div>
+                    </div>
+                    <div class="custom-modal-body">
+                        <p style="color: #28a745; font-weight: bold; margin-bottom: 10px;">Sincronización Exitosa (Base {texto_banco} Oficial)</p>
+                        <div style="font-size: 3em; margin-top: 10px;">✅</div>
+                    </div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        time.sleep(1.2)
 
         modal_placeholder.empty()
         st.session_state[session_key] = True

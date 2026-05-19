@@ -69,7 +69,7 @@ if monto_limpio > 0:
         "Contado": 0.0290,      # 2.5% + IVA
         "3 Meses": 0.06461,     # 5.57% + IVA
         "6 Meses": 0.11008,     # 9.49% + IVA
-        "9 Meses": 0.1529a,     # 13.19% + IVA (redondeado a 15.30%)
+        "9 Meses": 0.15300,     # 13.19% + IVA (redondeado a 15.30%)
         "12 Meses": 0.19372     # 16.70% + IVA
     }
 

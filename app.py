@@ -5,7 +5,7 @@ import time
 # 1. Configuración de Marca Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS Avanzado: Modales premium con inyección de marcas y efectos de alta fidelidad (Fiel a la imagen)
+# CSS Avanzado: Inyección de Modales Premium con efectos Glassmorphism e Identidad de Marca
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
@@ -48,16 +48,17 @@ st.markdown("""
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid #e2e8f0;
+        height: 80px;
     }
     .brand-logo-container {
         display: flex;
         align-items: center;
-        max-width: 50%;
+        justify-content: center;
+        height: 100%;
     }
     .brand-logo-img {
-        max-height: 38px;
+        max-height: 35px;
         width: auto;
-        object-fit: contain;
         display: block;
     }
     .brand-title-text {
@@ -91,14 +92,14 @@ st.markdown("""
         line-height: 1.4;
     }
 
-    /* --- DISEÑO DE BARRA DE PROGRESO DE LA IMAGEN --- */
+    /* --- DISEÑO DE BARRA DE PROGRESO DE LA IMAGEN RECONSTRUIDO --- */
     .progress-wrapper {
         position: relative;
         width: 100%;
     }
     progress {
         width: 100%;
-        height: 26px;
+        height: 28px;
         display: block;
         -webkit-appearance: none;
         appearance: none;
@@ -120,7 +121,7 @@ st.markdown("""
         transform: translate(-50%, -50%);
         color: #ffffff;
         font-family: system-ui, sans-serif;
-        font-size: 0.9em;
+        font-size: 0.95em;
         font-weight: bold;
     }
     </style>
@@ -144,32 +145,32 @@ else:
 
 st.write("---")
 
-# DECLARACIÓN GLOBAL DE VARIABLES PARA EL CONTROL DE FLUJO
+# CONTROL DE FLUJO Y VARIABLES GLOBALES
 plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
 iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
 
 if monto_limpio > 0:
     
-    # --- ASIGNACIÓN DE TASAS E IMÁGENES LIMPIAS REVISADAS ---
+    # --- LOGOS EMBEBIDOS EN FORMATO BASE64 DATA-URI REALES ---
     if tipo_tarjeta == "BBVA / Visa / Mastercard":
         tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
         texto_banco = "BBVA"
         color_banco = "#004488"
-        # URL limpia sin extensiones duplicadas
-        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/BBVA_Logo.svg/320px-BBVA_Logo.svg.png"
+        # Logotipo vectorial optimizado embebido
+        base64_logo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30' fill='%23004488'><path d='M0 0h7.2c4.6 0 7.6 2.2 7.6 5.8 0 2.4-1.4 4.4-4 5.4 2.6 1 4.4 3.2 4.4 6.2 0 4-3.4 6.6-11.6 6.6H0V0zm4.4 4v5.6h2.6c2.2 0 3.4-1 3.4-2.8 0-1.8-1.2-2.8-3.4-2.8H4.4zm0 9.6V20h3c2.4 0 3.8-1.2 3.8-3.2 0-2-1.4-3.2-3.8-3.2h-3zM19.2 0h7.2c4.6 0 7.6 2.2 7.6 5.8 0 2.4-1.4 4.4-4 5.4 2.6 1 4.4 3.2 4.4 6.2 0 4-3.4 6.6-11.6 6.6H19.2V0zm4.4 4v5.6h2.6c2.2 0 3.4-1 3.4-2.8 0-1.8-1.2-2.8-3.4-2.8H23.6zm0 9.6V20h3c2.4 0 3.8-1.2 3.8-3.2 0-2-1.4-3.2-3.8-3.2h-3zM46.8 0h4.4l6 24h-4.8l-1.2-5.2H44.8L43.6 24h-4.8L44.8 0H46.8zm-1.2 14.8h4.8L48 5.2l-2.4 9.6zM61.2 0h4.4l5.6 16.4L76.8 0h4.4L73.4 24H69l-7.8-24z'/></svg>"
     else:
         tasas = [0.04466, 0.09802, 0.13630, 0.17574, 0.20646]
         texto_banco = "American Express"
         color_banco = "#0076a5"
-        # URL limpia sin extensiones duplicadas
-        url_logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_2018.svg/240px-American_Express_logo_2018.svg.png"
+        # Isotipo de American Express embebido
+        base64_logo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30'><rect width='100' height='30' rx='4' fill='%230076A5'/><text x='12' y='21' fill='%23FFFFFF' font-family='sans-serif' font-weight='900' font-size='14' letter-spacing='0.5'>AMEX</text></svg>"
 
     # --- EFECTO VISUAL DE POP-UP CENTRADO (5 SEGUNDOS) ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
         placeholder = st.empty()
         
-        # Animación de 10 pasos a 0.5s cada uno
+        # Animación de 10 segmentos fluidos
         for i_step in range(11):
             porcentaje = i_step * 10
             placeholder.markdown(f"""
@@ -177,7 +178,7 @@ if monto_limpio > 0:
                     <div class="modal-box" style="border-color: {color_banco};">
                         <div class="modal-header-brand">
                             <div class="brand-logo-container">
-                                <img src="{url_logo}" class="brand-logo-img" alt="{texto_banco}">
+                                <img src="{base64_logo}" class="brand-logo-img" alt="{texto_banco}">
                             </div>
                             <div class="brand-title-text">
                                 <span class="brand-title-main">Sincronizando</span>
@@ -196,13 +197,13 @@ if monto_limpio > 0:
             """, unsafe_allow_html=True)
             time.sleep(0.5)
             
-        # Pantalla final de éxito
+        # Modal de éxito en sincronización cifrada
         placeholder.markdown(f"""
             <div class="modal-backdrop">
                 <div class="modal-box" style="border-color: #28a745;">
                     <div class="modal-header-brand">
                         <div class="brand-logo-container">
-                            <img src="{url_logo}" class="brand-logo-img" alt="{texto_banco}">
+                            <img src="{base64_logo}" class="brand-logo-img" alt="{texto_banco}">
                         </div>
                         <div class="brand-title-text">
                             <span class="brand-title-main" style="color: #28a745;">Enlace</span>
@@ -236,7 +237,7 @@ if monto_limpio > 0:
     
     # 5. Opciones para el Cliente
     st.write("### 📋 Tabla de Cotizaciones para el Cliente")
-    st.caption(f"Valores preferenciales processed mediante la red de pago {texto_banco}")
+    st.caption(f"Valores preferenciales procesados mediante la red de pago {texto_banco}")
     
     col1, col2, col3 = st.columns(3)
     

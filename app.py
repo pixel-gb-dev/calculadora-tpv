@@ -5,19 +5,41 @@ import time
 # 1. Configuración de Marca Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS para el look visual moderno e impecable
+# CSS Avanzado: Interfaz Premium con efecto Modal Flotante y Desenfoque de Fondo
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
     div.stNumberInput > div > div > input { background-color: #1e2630; color: white; border-radius: 10px; font-size: 1.2em; }
     div.stSelectbox > div > div > div { background-color: #1e2630; color: white; border-radius: 10px; }
     .stMetric { background-color: #1e2630; padding: 20px; border-radius: 15px; border: 1px solid #3e4a5b; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    
     .client-card { 
         background-color: #ffffff; padding: 25px; border-radius: 15px; color: #1e2630; 
         margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-top: 5px solid #004488;
     }
     [data-testid="stSidebar"] { background-color: #11141a; border-right: 1px solid #3e4a5b; }
-    .stProgress > div > div > div > div { background-color: #004488; }
+    
+    /* --- EFECTO VISUAL DE POP-UP (MODAL) Y DESENFOQUE --- */
+    .modal-backdrop {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background-color: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(6px); /* Desenfoque de fondo estilo iOS/PC */
+        z-index: 99999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-box {
+        background-color: #1e2630;
+        padding: 40px;
+        border-radius: 20px;
+        border: 2px solid #3e4a5b;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        text-align: center;
+        width: 85%;
+        max-width: 450px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -28,10 +50,10 @@ with st.sidebar:
     monto_limpio = st.number_input("¿Cuánto deseas recibir libre? ($)", min_value=0.0, step=1000.0, value=0.0)
     tipo_tarjeta = st.selectbox("Tipo de Tarjeta del Cliente:", ["BBVA / Visa / Mastercard", "American Express (AMEX)"])
     st.divider()
-    st.write(f"🔧 **Base: {tipo_tarjeta}**")
-    st.caption("Comisión + IVA calculados al instante.")
+    st.write(f"🔧 **Base actual: {tipo_tarjeta}**")
+    st.caption("Comisión + IVA integrados para cálculo Neto.")
 
-# 3. Encabezado de Imagen Seguro
+# 3. Encabezado de Imagen Autónomo
 if os.path.exists("header.png"):
     st.image("header.png", use_container_width=True)
 else:
@@ -41,7 +63,7 @@ st.write("---")
 
 if monto_limpio > 0:
     
-    # --- CONFIGURACIÓN DE TASAS EXACTAS (ORDENADAS POR PLAZO) ---
+    # --- CONFIGURACIÓN DE ASIGNACIÓN ASOCIATIVA ---
     if tipo_tarjeta == "BBVA / Visa / Mastercard":
         plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
         tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
@@ -53,17 +75,39 @@ if monto_limpio > 0:
 
     iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
 
-    # --- EFECTO VISUAL DE SINCRONIZACIÓN (5 SEGUNDOS) ---
+    # --- EFECTO VISUAL DE POP-UP CENTRADO OPTIMIZADO (5 SEGUNDOS) ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
-        with st.spinner(f"⏳ Estableciendo conexión segura con la red de {texto_banco}..."):
-            progreso_bar = st.progress(0)
-            for porcentaje in range(101):
-                time.sleep(0.05)
-                progreso_bar.progress(porcentaje)
-        st.success(f"🔒 Enlace de procesamiento autorizado con {texto_banco}.")
+        placeholder = st.empty()
+        
+        # Ciclo optimizado a 10 pasos de 0.5 segundos cada uno (Mismos 5 segundos totales)
+        for i in range(11):
+            porcentaje = i * 10
+            placeholder.markdown(f"""
+                <div class="modal-backdrop">
+                    <div class="modal-box">
+                        <h2 style='color: white; margin: 0 0 10px 0; font-family: sans-serif;'>⚙️ Sincronizando Interfaz</h2>
+                        <p style='color: #a0aec0; font-size: 1.1em; margin: 0;'>Estableciendo enlace seguro con la red de {texto_banco}...</p>
+                        <p style='color: #004488; font-size: 2em; font-weight: bold; margin: 20px 0;'>{porcentaje}%</p>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+            time.sleep(0.5)
+            
+        # Pantalla final de éxito
+        placeholder.markdown(f"""
+            <div class="modal-backdrop">
+                <div class="modal-box" style="border-color: #28a745;">
+                    <h2 style='color: #28a745; margin: 0 0 10px 0; font-family: sans-serif;'>🔒 Conexión Exitosa</h2>
+                    <p style='color: white; font-size: 1.1em; margin: 0;'>Enlace de procesamiento autorizado y cifrado.</p>
+                    <div style="font-size: 3em; margin-top: 15px;">✅</div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        time.sleep(1.2)
+        placeholder.empty() # Limpieza absoluta del componente visual antes del reinicio
         st.session_state[session_key] = True
-        time.sleep(1)
         st.rerun()
 
     # 4. Dashboard de Métricas
@@ -78,7 +122,7 @@ if monto_limpio > 0:
 
     st.divider()
     
-    # 5. Opciones para el Cliente (Distribución Visual en 3 Columnas)
+    # 5. Opciones para el Cliente (Distribución Responsiva)
     st.write("### 📋 Tabla de Cotizaciones para el Cliente")
     st.caption(f"Valores preferenciales procesados mediante la red {texto_banco}")
     

@@ -5,7 +5,7 @@ import time
 # 1. Configuración de Marca Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS Avanzado: Interfaz Premium con efecto Modal Flotante y Desenfoque de Fondo
+# CSS Avanzado: Modales con efecto Pop-up, Desenfoque de fondo y personalización de marcas
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
@@ -24,7 +24,7 @@ st.markdown("""
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
         background-color: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(6px); /* Desenfoque de fondo estilo iOS/PC */
+        backdrop-filter: blur(6px);
         z-index: 99999;
         display: flex;
         justify-content: center;
@@ -39,6 +39,25 @@ st.markdown("""
         text-align: center;
         width: 85%;
         max-width: 450px;
+    }
+
+    /* --- DISEÑO DE LA BARRA DE PROGRESO PREMIUM --- */
+    progress {
+        width: 100%;
+        height: 14px;
+        margin: 20px 0 10px 0;
+        display: block;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    progress::-webkit-progress-bar {
+        background-color: #11141a;
+        border-radius: 10px;
+    }
+    progress::-webkit-progress-value {
+        background-color: #004488;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #004488;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -63,107 +82,7 @@ st.write("---")
 
 if monto_limpio > 0:
     
-    # --- CONFIGURACIÓN DE ASIGNACIÓN ASOCIATIVA ---
+    # --- CONFIGURACIÓN DE ASIGNACIÓN ASOCIATIVA Y SÍMBOLOS DE MARCA ---
     if tipo_tarjeta == "BBVA / Visa / Mastercard":
         plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
-        tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
-        texto_banco = "BBVA"
-    else:
-        plazos = ["Contado", "3 Meses", "6 Meses", "9 Meses", "12 Meses"]
-        tasas = [0.04466, 0.09802, 0.13630, 0.17574, 0.20646]
-        texto_banco = "American Express"
-
-    iconos = ["💳", "📅", "⏳", "⌛️", "💎"]
-
-    # --- EFECTO VISUAL DE POP-UP CENTRADO OPTIMIZADO (5 SEGUNDOS) ---
-    session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
-    if session_key not in st.session_state:
-        placeholder = st.empty()
-        
-        # Ciclo optimizado a 10 pasos de 0.5 segundos cada uno (Mismos 5 segundos totales)
-        for i in range(11):
-            porcentaje = i * 10
-            placeholder.markdown(f"""
-                <div class="modal-backdrop">
-                    <div class="modal-box">
-                        <h2 style='color: white; margin: 0 0 10px 0; font-family: sans-serif;'>⚙️ Sincronizando Interfaz</h2>
-                        <p style='color: #a0aec0; font-size: 1.1em; margin: 0;'>Estableciendo enlace seguro con la red de {texto_banco}...</p>
-                        <p style='color: #004488; font-size: 2em; font-weight: bold; margin: 20px 0;'>{porcentaje}%</p>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-            time.sleep(0.5)
-            
-        # Pantalla final de éxito
-        placeholder.markdown(f"""
-            <div class="modal-backdrop">
-                <div class="modal-box" style="border-color: #28a745;">
-                    <h2 style='color: #28a745; margin: 0 0 10px 0; font-family: sans-serif;'>🔒 Conexión Exitosa</h2>
-                    <p style='color: white; font-size: 1.1em; margin: 0;'>Enlace de procesamiento autorizado y cifrado.</p>
-                    <div style="font-size: 3em; margin-top: 15px;">✅</div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        time.sleep(1.2)
-        placeholder.empty() # Limpieza absoluta del componente visual antes del reinicio
-        st.session_state[session_key] = True
-        st.rerun()
-
-    # 4. Dashboard de Métricas
-    st.write(f"### Su Resumen de Margen ({texto_banco})")
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.metric(label="Tu Depósito NETO Real", value=f"${monto_limpio:,.2f}")
-    with col_b:
-        tasa_max = tasas[-1]
-        total_max = monto_limpio / (1 - tasa_max)
-        st.metric(label="Monto Máximo Cobrado (12M)", value=f"${total_max:,.2f}", delta="Todo Incluido")
-
-    st.divider()
-    
-    # 5. Opciones para el Cliente (Distribución Responsiva)
-    st.write("### 📋 Tabla de Cotizaciones para el Cliente")
-    st.caption(f"Valores preferenciales procesados mediante la red {texto_banco}")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    list_a_digitar = []
-    list_total_retenido = []
-
-    for i in range(len(plazos)):
-        plazo = plazos[i]
-        tasa = tasas[i]
-        icono = iconos[i]
-        
-        monto_total = monto_limpio / (1 - tasa)
-        pago_mensual = monto_total / (1 if "Contado" in plazo else int(plazo.split()[0]))
-        
-        list_a_digitar.append(f"${monto_total:,.2f}")
-        list_total_retenido.append(f"${monto_total - monto_limpio:,.2f}")
-        
-        target_col = [col1, col2, col3][i % 3]
-        with target_col:
-            st.markdown(f"""
-                <div class="client-card">
-                    <h3 style='margin:0; color:#004488;'>{icono} {plazo}</h3>
-                    <p style='margin:10px 0; font-size:1.1em; color:#555;'>Monto Total con Tarjeta:</p>
-                    <h4 style='margin:0; color:#333;'>${monto_total:,.2f}</h4>
-                    <hr>
-                    <p style='margin:5px 0; font-size:1.3em;'><strong>Paga Mensual:</strong></p>
-                    <h1 style='margin:0; color:#1e2630;'>${pago_mensual:,.2f}</h1>
-                </div>
-            """, unsafe_allow_html=True)
-
-    # 6. Sección Interna Oculta para la Terminal
-    st.sidebar.markdown("---")
-    with st.sidebar.expander("🔐 DATOS DE TERMINAL (SÓLO TÚ)"):
-        st.table({
-            "Plazo": plazos,
-            "A Digitar": list_a_digitar,
-            "Total Retenido": list_total_retenido
-        })
-else:
-    st.info("👋 ¡Bienvenido! Ingresa la cantidad neta y selecciona el tipo de tarjeta en la barra lateral.")
-
-st.caption("© 2026 pixel_gb.dev | Soluciones Digitales Inteligentes")
+        tasas =

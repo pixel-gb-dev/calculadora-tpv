@@ -5,7 +5,7 @@ import time
 # 1. Configuración de Marca Pro
 st.set_page_config(page_title="pixel_gb.dev | Pro", page_icon="💎", layout="wide")
 
-# CSS Avanzado: Copiado exacto de las reglas visuales de tu imagen de referencia
+# CSS Avanzado: Copiado exacto de las reglas visuales de tu imagen de referencia con transiciones fluidas
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: #ffffff; }
@@ -28,7 +28,7 @@ st.markdown("""
         height: 100vh;
         background-color: rgba(4, 6, 10, 0.85);
         backdrop-filter: blur(8px);
-        z-index: 999999 !important; /* Forzar que se quede por encima de todo */
+        z-index: 999999 !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
@@ -79,7 +79,7 @@ st.markdown("""
         line-height: 1.5;
     }
 
-    /* --- DISEÑO DE BARRA DE PROGRESO DE LA IMAGEN (HTML PURO) --- */
+    /* --- DISEÑO DE BARRA DE PROGRESO FLUIDA (HTML PURO) --- */
     .custom-progress-wrapper {
         position: relative;
         width: 100%;
@@ -100,7 +100,8 @@ st.markdown("""
         height: 100%;
         background: linear-gradient(180deg, #0099ff 0%, #004488 100%);
         border-radius: 11px;
-        transition: width 0.2s ease-out;
+        /* ANIMACIÓN LINEAL NATURAL DE PASO CORTO */
+        transition: width 0.04s linear; 
     }
     .custom-progress-text {
         position: absolute;
@@ -174,16 +175,15 @@ if monto_limpio > 0:
         </div>
         """
 
-    # --- SIMULACIÓN DEL POP-UP CENTRADO CORREGIDO ---
+    # --- SIMULACIÓN DEL POP-UP CON DESLIZAMIENTO NATURAL (1% EN 1%) ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
         modal_placeholder = st.empty()
         
-        # Corremos la barra de progreso de 10% en 10%
-        for percent in range(0, 101, 10):
+        # Incremento continuo de 1 en 1 para eliminar el efecto bloque
+        for percent in range(0, 101, 1):
             badge_html = '<div class="success-icon-badge">✓</div>' if percent == 100 else ''
             
-            # Al usar modal_placeholder.markdown, forzamos el render al centro absoluto del viewport de la pantalla
             modal_placeholder.markdown(f"""
                 <div class="modal-backdrop">
                     <div class="custom-modal-box" style="border: 2px solid {color_banco};">
@@ -207,7 +207,8 @@ if monto_limpio > 0:
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-            time.sleep(0.4)
+            # 0.04 segundos * 100 pasos = 4 segundos de carga continua e impecable
+            time.sleep(0.04)
             
         # Breve mensaje de éxito centrado
         modal_placeholder.markdown(f"""

@@ -19,16 +19,19 @@ st.markdown("""
     }
     [data-testid="stSidebar"] { background-color: #11141a; border-right: 1px solid #3e4a5b; }
     
-    /* --- ESTRUCTURA DEL MODAL (POP-UP) FIEL A LA IMAGEN --- */
-    .custom-modal-bg {
+    /* --- ESTRUCTURA DEL MODAL (POP-UP) CENTRADO FIEL A LA IMAGEN --- */
+    .modal-backdrop {
         position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
         background-color: rgba(4, 6, 10, 0.85);
         backdrop-filter: blur(8px);
-        z-index: 99999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        z-index: 999999 !important; /* Forzar que se quede por encima de todo */
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
     .custom-modal-box {
         background-color: #141923;
@@ -97,7 +100,7 @@ st.markdown("""
         height: 100%;
         background: linear-gradient(180deg, #0099ff 0%, #004488 100%);
         border-radius: 11px;
-        transition: width 0.4s ease-out;
+        transition: width 0.2s ease-out;
     }
     .custom-progress-text {
         position: absolute;
@@ -155,7 +158,6 @@ if monto_limpio > 0:
         tasas = [0.02900, 0.06461, 0.11008, 0.15300, 0.19372]
         texto_banco = "BBVA"
         color_banco = "#004488"
-        # Logo institucional recreado en CSS/HTML con su tipografía clásica
         html_logo = """
         <div style="color: #004488; font-family: 'Arial Black', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: -2px; display: flex; align-items: center;">
             <div style="width: 8px; height: 22px; background-color: #004488; margin-right: 5px; display: inline-block;"></div>
@@ -166,23 +168,22 @@ if monto_limpio > 0:
         tasas = [0.04466, 0.09802, 0.13630, 0.17574, 0.20646]
         texto_banco = "American Express"
         color_banco = "#0076a5"
-        # Logo de la tarjeta AMEX azul clásico recreado
         html_logo = """
         <div style="background-color: #0076A5; color: #FFFFFF; font-family: 'Arial Black', sans-serif; font-size: 13px; font-weight: 900; padding: 6px 12px; border-radius: 4px; letter-spacing: 0.5px; display: inline-block;">
             AMEX
         </div>
         """
 
-    # --- SIMULACIÓN DEL POP-UP (5 SEGUNDOS) ---
+    # --- SIMULACIÓN DEL POP-UP CENTRADO CORREGIDO ---
     session_key = f"load_{monto_limpio}_{tipo_tarjeta}"
     if session_key not in st.session_state:
         modal_placeholder = st.empty()
         
         # Corremos la barra de progreso de 10% en 10%
         for percent in range(0, 101, 10):
-            # Condición visual para el check verde final que pusiste en tu diseño
             badge_html = '<div class="success-icon-badge">✓</div>' if percent == 100 else ''
             
+            # Al usar modal_placeholder.markdown, forzamos el render al centro absoluto del viewport de la pantalla
             modal_placeholder.markdown(f"""
                 <div class="modal-backdrop">
                     <div class="custom-modal-box" style="border: 2px solid {color_banco};">
